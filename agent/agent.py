@@ -72,8 +72,8 @@ MACHINE_ID = _get_machine_id()
 # Metrics Collection
 # ─────────────────────────────────────────────────────────────────────────────
 
-_prev_net: psutil._common.snetio = None
-_prev_net_time: float = None
+_prev_net = None  # type: ignore
+_prev_net_time = None  # type: ignore
 
 
 def collect() -> dict:
