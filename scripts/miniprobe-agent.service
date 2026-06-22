@@ -1,0 +1,41 @@
+# =============================================================================
+# MiniProbe Agent — Systemd Service Template
+# =============================================================================
+# SYSTEM-WIDE (requires root):
+#   sudo cp miniprobe-agent.service /etc/systemd/system/
+#   sudo systemctl daemon-reload
+#   sudo systemctl enable --now miniprobe-agent
+#
+# USER-LEVEL (no root):
+#   cp miniprobe-agent.service ~/.config/systemd/user/
+#   systemctl --user daemon-reload
+#   systemctl --user enable --now miniprobe-agent
+# =============================================================================
+
+[Unit]
+Description=MiniProbe Agent
+Documentation=https://github.com/yourname/miniprobe
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+# ── Adjust these three lines ──────────────────────────────────────────────────
+ExecStart=/usr/bin/python3 /opt/miniprobe/agent.py \
+    -s ws://SERVER_IP:8080/ws \
+    -t miniprobe \
+    -i 3
+# ─────────────────────────────────────────────────────────────────────────────
+Restart=always
+RestartSec=10
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=miniprobe-agent
+Environment="PYTHONUNBUFFERED=1"
+
+# For system service only — set appropriate user
+# User=nobody
+# Group=nogroup
+
+[Install]
+WantedBy=multi-user.target

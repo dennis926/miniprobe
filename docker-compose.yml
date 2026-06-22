@@ -1,0 +1,37 @@
+version: '3.8'
+
+# =============================================================================
+# MiniProbe — Docker Compose
+#
+# Start server:
+#   docker compose up -d
+#
+# Custom token / port via .env or environment:
+#   TOKEN=mysecret PORT=8080 docker compose up -d
+# =============================================================================
+
+services:
+  miniprobe:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: miniprobe-server:latest
+    container_name: miniprobe
+    restart: unless-stopped
+    ports:
+      - "${PORT:-8080}:8080"
+    command:
+      - "-port"
+      - "8080"
+      - "-token"
+      - "${TOKEN:-miniprobe}"
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://localhost:8080/api/agents"]
+      interval: 30s
+      timeout:  5s
+      retries:  3
+    logging:
+      driver: json-file
+      options:
+        max-size: "10m"
+        max-file: "3"
